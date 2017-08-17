@@ -339,6 +339,26 @@ function! s:get_unix_gdb()
         return l:gdb_exe . ' -f'
     endif
 endfunction
+"
+" Get command to execute cuda-gdb on Unix
+function! s:get_unix_cuda_gdb()
+    let l:gdb_exe = 'cuda-gdb'
+
+    if !executable(l:gdb_exe)
+        return ''
+    endif
+
+    sil let l:gdb_py_support = system(l:gdb_exe . ' -q -batch -ex "python print(\"PYYES\")"')
+    if l:gdb_py_support =~ ".*PYYES\n.*"
+        " Gdb has python support
+        let g:conque_gdb_gdb_py_support = 1
+        return l:gdb_exe . ' -f -x ' . s:SCRIPT_DIR . 'conque_gdb_gdb.py'
+    else
+        " No python pupport
+        let g:conque_gdb_gdb_py_support = 0
+        return l:gdb_exe . ' -f'
+    endif
+endfunction
 
 " Get command to execute gdb on Windows
 function! s:get_win_gdb()
@@ -600,6 +620,12 @@ function! conque_gdb#change_gdb_exe(gdb_path)
         let g:ConqueGdb_GdbExe = a:gdb_path
     endif
     let s:gdb_command = s:get_gdb_command()
+endfunction
+
+" Switch to CUDA-gdb
+function! conque_gdb#switch_to_cuda_gdb()
+    let g:ConqueGdb_GdbExe = '' " system('which cuda-gdb')
+    let s:gdb_command = s:get_unix_cuda_gdb()
 endfunction
 
 call conque_term#register_function('after_startup', 'conque_gdb#after_startup')

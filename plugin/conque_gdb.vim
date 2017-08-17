@@ -97,6 +97,9 @@ command! -nargs=* -complete=file ConqueGdbTab call conque_gdb#open(<q-args>, [
 " Command to change path to GDB executable at runtime
 command! -nargs=? -complete=file ConqueGdbExe call conque_gdb#change_gdb_exe(<q-args>)
 
+" cuda-gdb
+command! -nargs=* -complete=file ConqueCudaGdb call conque_gdb#switch_to_cuda_gdb()|ConqueGdb <q-args>
+
 " Command to delete the buffers ConqueGdb has opened
 command! -nargs=0 ConqueGdbBDelete call conque_gdb#delete_opened_buffers()
 
